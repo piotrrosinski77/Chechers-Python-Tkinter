@@ -1,1 +1,1 @@
-# Chechers-Python-Tkinter
+# Checkers-Python-Tkinter
