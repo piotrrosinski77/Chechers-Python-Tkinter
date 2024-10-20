@@ -1,26 +1,7 @@
 import tkinter as tk
-from tkinter import *
 from tkinter import PhotoImage
+from .board import Board
 
-# Klasa Board przechowuje stan planszy
-class Board:
-    def __init__(self):
-        # Plansza 8x8, puste pola oznaczone jako None, pionki jako 'B' (czarne) lub 'W' (białe)
-        self.grid = [[None for _ in range(8)] for _ in range(8)]
-        self.initialize_pieces()
-
-    def initialize_pieces(self):
-        # Inicjalizacja pionków na planszy (czarne na górze, białe na dole)
-        for row in range(3):  # Czarne pionki
-            for col in range(8):
-                if (row + col) % 2 == 1:
-                    self.grid[row][col] = 'B'
-        for row in range(5, 8):  # Białe pionki
-            for col in range(8):
-                if (row + col) % 2 == 1:
-                    self.grid[row][col] = 'W'
-
-# Klasa CheckersApp odpowiada za interfejs użytkownika
 class CheckersApp:
     def __init__(self, master):
         self.master = master
@@ -55,7 +36,7 @@ class CheckersApp:
                 if piece is not None:
                     x = col * 75 + 37.5  # Środek pola w osi x
                     y = row * 75 + 37.5  # Środek pola w osi y
-                    if piece == 'B':
+                    if piece.is_black():
                         self.draw_3d_piece(x, y, 'black', 'darkgray')
                     else:
                         self.draw_3d_piece(x, y, 'white', 'lightgray')
@@ -67,6 +48,8 @@ class CheckersApp:
         # Pionek główny
         self.canvas.create_oval(x - 27, y - 27, x + 27, y + 27, fill=color, outline='black')
 
+
+# Funkcja główna do uruchamiania aplikacji
 if __name__ == "__main__":
     root = tk.Tk()
     root.geometry('600x600')  # Ustawienie rozmiaru okna na 600x600

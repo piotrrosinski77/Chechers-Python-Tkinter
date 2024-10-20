@@ -1,0 +1,41 @@
+# Ignorowanie plików kompilacji i cache Pythona
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.manifest
+*.spec
+
+# Ignorowanie plików środowisk wirtualnych
+env/
+venv/
+ENV/
+.venv/
+
+# Ignorowanie plików tymczasowych edytora
+*.swp
+*.swo
+*.swn
+*.tmp
+*~
+
+# Ignorowanie plików systemowych
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.bak
+
+# Ignorowanie plików konfiguracyjnych
+*.log
+*.ini
+
+# Ignorowanie plików graficznych, jeśli są generowane dynamicznie
+img/*.png
+
