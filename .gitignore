@@ -35,7 +35,3 @@ Thumbs.db
 # Ignorowanie plików konfiguracyjnych
 *.log
 *.ini
-
-# Ignorowanie plików graficznych, jeśli są generowane dynamicznie
-img/*.png
-
