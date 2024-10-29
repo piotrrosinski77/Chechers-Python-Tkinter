@@ -1,16 +1,16 @@
 class Board:
     def __init__(self):
-        # Plansza 8x8, puste pola oznaczone jako None, pionki jako 'B' (czarne) lub 'W' (białe)
+        # board 8x8, B = black, W = white
         self.grid = [[None for _ in range(8)] for _ in range(8)]
         self.initialize_pieces()
 
     def initialize_pieces(self):
-        # Inicjalizacja pionków na planszy (czarne na górze, białe na dole)
-        for row in range(3):  # Czarne pionki
+		# white pieces are at the bottom of the window
+        for row in range(3):  # black pieces
             for col in range(8):
                 if (row + col) % 2 == 1:
                     self.grid[row][col] = 'B'
-        for row in range(5, 8):  # Białe pionki
+        for row in range(5, 8):  # white pieces
             for col in range(8):
                 if (row + col) % 2 == 1:
                     self.grid[row][col] = 'W'
@@ -19,7 +19,7 @@ class Board:
         piece = self.grid[row][col]
         moves = []
 
-        # Sprawdzenie ruchów dla czarnych pionków
+        # check available moves for black pieces
         if piece == 'B':
             if row + 1 < 8:
                 if col - 1 >= 0 and self.grid[row + 1][col - 1] is None:
@@ -27,7 +27,7 @@ class Board:
                 if col + 1 < 8 and self.grid[row + 1][col + 1] is None:
                     moves.append((row + 1, col + 1))
 
-        # Sprawdzenie ruchów dla białych pionków
+		# check available moves for white pieces
         if piece == 'W':
             if row - 1 >= 0:
                 if col - 1 >= 0 and self.grid[row - 1][col - 1] is None:
@@ -38,7 +38,7 @@ class Board:
         return moves
 
     def move_piece(self, from_row, from_col, to_row, to_col):
-        # Przenieś pionek z pozycji (from_row, from_col) do (to_row, to_col)
+        # move piece (from_row, from_col) do (to_row, to_col)
         self.grid[to_row][to_col] = self.grid[from_row][from_col]
         self.grid[from_row][from_col] = None
-        # Dodatkowe zasady, takie jak usuwanie pionków w przypadku bicia, można dodać tutaj
+        # place to add additional rules...
