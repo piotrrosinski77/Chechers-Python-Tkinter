@@ -601,7 +601,10 @@ class CheckersApp:
 
     def handle_computer_move(self):
         # Get the next historical move from the dataset
+        # Check whether current_move do not go beyond the data
         if self.current_move < len(self.historical_moves):
+			
+			# Get the coordinates 
             from_coords, to_coords = self.historical_moves[self.current_move]
 
             # Convert the coordinates from string to integer
@@ -611,15 +614,26 @@ class CheckersApp:
             # Perform the move on the board
             self.board.move_piece(from_coords[0], from_coords[1], to_coords[0], to_coords[1])
             self.current_move += 1
-
+		
+		# Redraw the board and pieces
         self.draw_board()
         self.draw_pieces()
 
 
-if __name__ == "__main__":
+'''if __name__ == "__main__":
     root = tk.Tk()
     root.geometry("600x600")
     root.title("Warcaby")
     app = CheckersApp(root)
     root.mainloop()
+'''
 
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.geometry("600x600")
+    root.title("Warcaby")
+    icon_path = "img/icon.png" 
+    icon_image = PhotoImage(file=icon_path)
+    root.call("wm", "iconphoto", root._w, icon_image)
+    app = CheckersApp(root)
+    root.mainloop()
