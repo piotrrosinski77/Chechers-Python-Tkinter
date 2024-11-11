@@ -4,24 +4,37 @@ def data_loader():
     # Load the dataset from Hugging Face
     dataset = load_dataset("NikolaiZhdanov/historical-checkers-games")
     
-    moves = []
-    # Iterate over each game in the 'train' split of the dataset
-    for example in dataset['train']:
-        for move in example['moves']:
-            if '-' in move:  # Regular moves
-                parts = move.split('-')
-                if len(parts) == 2:
-                    start, end = parts
-                    moves.append((start, end))
-            elif 'x' in move:  # Capture moves
-                captures = move.split('x')
-                if len(captures) >= 2:
-                    moves.append(tuple(captures))
+    # Parse the dataset to extract moves as lists of moves
+    games = []
+    for game in dataset['train']:  # Adjust 'train' as per dataset structure
+        # Each game is stored as a string, split by commas for individual moves
+        moves = game['moves'].split(',')
+        games.append(moves)
+    
+    return games
 
-    return moves
+'''
+# Usage
+checkers_games = data_loader()
+print(checkers_games[0])  # Display the moves of the first game
+print(checkers_games[1])  # Display the moves of the first game
+'''
+'''
+moves = []
+for example in dataset['train']:
+	for move in example['moves']:
+		if '-' in move:  # Check if the move contains a hyphen
+			start, end = move.split('-')
+			moves.append((start, end))
 
-
-
+return moves
+'''
+    
+'''
+    
+historical_moves = data_loader()
+print(historical_moves)
+'''
 '''
 from datasets import load_dataset
 

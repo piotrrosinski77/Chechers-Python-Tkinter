@@ -42,3 +42,6 @@ class Board:
         self.grid[to_row][to_col] = self.grid[from_row][from_col]
         self.grid[from_row][from_col] = None
         # place to add additional rules...
+        
+    def remove_piece(self, row, col):
+        self.grid[row][col] = None
