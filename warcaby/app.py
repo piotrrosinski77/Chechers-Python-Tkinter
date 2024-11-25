@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import PhotoImage
 from .board import Board
 from .data import data_loader  # Assuming both scripts are in the same directory
+from .ai import CheckersAIModel  # Importuj klasę z właściwego modułu
 
 
 class CheckersApp:
@@ -15,6 +16,8 @@ class CheckersApp:
         )
 
         # Load historical moves using the data_loader function
+        self.ai_model = CheckersAIModel()
+        self.model = self.ai_model.model
         self.historical_moves = data_loader()
         self.current_move = 0
         self.create_widgets()
