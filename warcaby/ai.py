@@ -1,6 +1,14 @@
-import numpy as np
+# importuje bibliotekę NumPy (obliczenia numeryczne)
+# import numpy as np
+
+# importuje bibliotekę TensorFlow (sieci neuronowe)
 from tensorflow.keras.models import Sequential
+
+# Dense to warstwa gęsta
+# Input definiuje kształt warstwy wejściowej
 from tensorflow.keras.layers import Dense, Input
+
+from tensorflow.keras.models import load_model
 
 
 class CheckersAIModel:
@@ -19,7 +27,8 @@ class CheckersAIModel:
             ]
         )
         model.compile(
-            optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"]
+            optimizer="adam", loss="categorical_crossentropy",
+            metrics=["accuracy"]
         )
         return model
 
@@ -27,12 +36,10 @@ class CheckersAIModel:
     def create_model():
         return CheckersAIModel._create_model()
 
-
-"""
     def train(self, X, y, epochs=10, batch_size=32):
 
         print("Rozpoczynam trening modelu...")
-        self.model.fit(X, y, epochs=epochs, batch_size=batch_size)
+        self.model.fit(X, y, epochs=10, batch_size=32)
         print("Trening zakończony!")
 
     def predict(self, board_state):
@@ -46,12 +53,8 @@ class CheckersAIModel:
         self.model.save(filepath)
         print(f"Model zapisany do pliku: {filepath}")
 
-    # def load_model(self, filepath):
-
-"""
-"""
-        from tensorflow.keras.models import load_model
+    def load_model(self, filepath):
 
         self.model = load_model(filepath)
         print(f"Model załadowany z pliku: {filepath}")
-"""
+

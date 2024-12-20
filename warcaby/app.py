@@ -1,8 +1,14 @@
 import tkinter as tk
 from tkinter import PhotoImage
 from .board import Board
-from .data import data_loader  # Assuming both scripts are in the same directory
+
+# Assuming both scripts are in the same directory
+from .data import data_loader
+
 from .ai import CheckersAIModel  # Importuj klasę z właściwego modułu
+
+# from ai import CheckersAIModel
+import numpy as np
 
 
 class CheckersApp:
@@ -12,14 +18,22 @@ class CheckersApp:
         self.selected_piece = None
         self.possible_moves = []
         self.player_turn = (
-            True  # True if it's the player's turn, False if it's the computer's turn
+            # True if it's the player's turn, False if it's the computer's turn
+            True
         )
 
         # Load historical moves using the data_loader function
-        self.ai_model = CheckersAIModel()
-        self.model = self.ai_model.model
+        self.model = CheckersAIModel()
+        # self.model = self.ai_model.model
         self.historical_moves = data_loader()
         self.current_move = 0
+
+        # X = np.array([])
+        # y = np.array([])
+
+        # model = self.ai_model.create_model()
+        # model.train(X, y, epochs=10, batch_size=32)
+
         self.create_widgets()
 
     def create_widgets(self):
@@ -38,7 +52,8 @@ class CheckersApp:
             for col in range(8):
                 color = "white" if (row + col) % 2 == 0 else "black"
                 self.canvas.create_rectangle(
-                    col * 75, row * 75, (col + 1) * 75, (row + 1) * 75, fill=color
+                    col * 75, row * 75, (col + 1) * 75,
+                    (row + 1) * 75, fill=color
                 )
 
                 # Highlight possible moves in green
@@ -66,7 +81,8 @@ class CheckersApp:
 
     def draw_3d_piece(self, x, y, color, shadow_color):
         self.canvas.create_oval(
-            x - 30, y - 30, x + 30, y + 30, fill=shadow_color, outline=shadow_color
+            x - 30, y - 30, x + 30, y + 30, 
+            fill=shadow_color, outline=shadow_color
         )
         self.canvas.create_oval(
             x - 27, y - 27, x + 27, y + 27, fill=color, outline="black"
@@ -91,12 +107,13 @@ class CheckersApp:
 
         clicked_piece = self.board.grid[row][col]
 
-        if clicked_piece == "W":  # Only allow selecting white pieces for the player
+        # Only allow selecting white pieces for the player
+        if clicked_piece == "W":
             self.selected_piece = (row, col)
             self.possible_moves = self.board.get_possible_moves(row, col)
-            print(
-                f"Player selected piece at {self.selected_piece} with moves {self.possible_moves}"
-            )  # Debug output
+            print(f"Player selected piece at {self.selected_piece}")
+            print(f"with moves {self.possible_moves}")
+            # Debug output
         elif self.selected_piece and (row, col) in self.possible_moves:
             # Execute player's move
             old_row, old_col = self.selected_piece
@@ -163,6 +180,14 @@ class CheckersApp:
         else:
             self.process_single_move(segment, piece_color)
 
+    def train_model(self):
+        # Przygotowanie danych treningowych
+        X = np.array([...])  # Dane wejściowe
+        y = np.array([...])  # Oczekiwane wyniki
+
+        # Trening modelu
+        self.model.train(X, y, epochs=10, batch_size=32)
+
     def process_single_move(self, move, piece_color):
         if "x" in move:
             # Multi-capture move
@@ -181,7 +206,8 @@ class CheckersApp:
                     print(
                         f"Removing captured piece at {capture_coords}"
                     )  # Debug output
-                    self.board.remove_piece(capture_coords[0], capture_coords[1])
+                    self.board.remove_piece(
+                        capture_coords[0], capture_coords[1])
 
                 from_coords = self.position_to_coords(from_pos)
                 to_coords = self.position_to_coords(to_pos)
@@ -211,4 +237,5 @@ if __name__ == "__main__":
     icon_image = PhotoImage(file=icon_path)
     root.call("wm", "iconphoto", root._w, icon_image)
     app = CheckersApp(root)
+    app.train_model()
     root.mainloop()
