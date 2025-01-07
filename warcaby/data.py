@@ -1,5 +1,6 @@
 from datasets import load_dataset
 
+
 def data_loader():
     # Load the dataset from Hugging Face
     dataset = load_dataset("NikolaiZhdanov/historical-checkers-games")
@@ -13,6 +14,7 @@ def data_loader():
     
     return games
 
+
 '''
 # Usage
 checkers_games = data_loader()
@@ -22,16 +24,12 @@ print(checkers_games[1])  # Display the moves of the first game
 '''
 moves = []
 for example in dataset['train']:
-	for move in example['moves']:
-		if '-' in move:  # Check if the move contains a hyphen
-			start, end = move.split('-')
-			moves.append((start, end))
+for move in example['moves']:
+if '-' in move:  # Check if the move contains a hyphen
+start, end = move.split('-')
+moves.append((start, end))
 
 return moves
-'''
-    
-'''
-    
 historical_moves = data_loader()
 print(historical_moves)
 '''
@@ -40,7 +38,6 @@ from datasets import load_dataset
 
 def data_loader():
     dataset = load_dataset("NikolaiZhdanov/historical-checkers-games")
-    
     moves = []
     for example in dataset['train']:
         for move in example['moves']:
@@ -49,9 +46,5 @@ def data_loader():
                 moves.append((start, end))
 
     return moves
-    
 import pandas as pd
-
-splits = {'train': 'data/train-00000-of-00001.parquet', 'test': 'data/test-00000-of-00001.parquet'}
-df = pd.read_parquet("hf://datasets/NikolaiZhdanov/historical-checkers-games/" + splits["train"])
 '''

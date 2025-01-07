@@ -7,8 +7,7 @@ from .data import data_loader
 
 from .ai import CheckersAIModel  # Importuj klasę z właściwego modułu
 
-# from ai import CheckersAIModel
-import numpy as np
+# import numpy as np
 
 
 class CheckersApp:
@@ -24,17 +23,13 @@ class CheckersApp:
 
         # Load historical moves using the data_loader function
         self.model = CheckersAIModel()
-        # self.model = self.ai_model.model
         self.historical_moves = data_loader()
         self.current_move = 0
 
-        # X = np.array([])
-        # y = np.array([])
-
-        # model = self.ai_model.create_model()
-        # model.train(X, y, epochs=10, batch_size=32)
-
         self.create_widgets()
+
+        # Train the model with historical moves
+        self.train_model()
 
     def create_widgets(self):
         self.canvas = tk.Canvas(self.master, width=600, height=600)
@@ -149,16 +144,9 @@ class CheckersApp:
 
     def handle_computer_move(self):
         if self.current_move < len(self.historical_moves):
-            move = self.historical_moves[self.current_move]
-
-            # Skip white moves in the dataset (even index = player's move)
-            # if self.current_move % 2 == 0:
-            # self.current_move += 1
-            # return
-
-            print(f"Computer's move: {move[0]}")  # Debug output
-            self.process_move(move[0], "B")
-
+            move = self.model.generate_valid_move(self.board.grid)
+            print(f"Computer's move: {move}")  # Debug output
+            self.process_move(move, "B")
             self.current_move += 1
 
             # After computer's move, switch back to player
@@ -181,12 +169,8 @@ class CheckersApp:
             self.process_single_move(segment, piece_color)
 
     def train_model(self):
-        # Przygotowanie danych treningowych
-        X = np.array([...])  # Dane wejściowe
-        y = np.array([...])  # Oczekiwane wyniki
-
-        # Trening modelu
-        self.model.train(X, y, epochs=10, batch_size=32)
+        # Trening modelu z użyciem historycznych ruchów
+        self.model.train_model(self.historical_moves)
 
     def process_single_move(self, move, piece_color):
         if "x" in move:
@@ -237,5 +221,4 @@ if __name__ == "__main__":
     icon_image = PhotoImage(file=icon_path)
     root.call("wm", "iconphoto", root._w, icon_image)
     app = CheckersApp(root)
-    app.train_model()
     root.mainloop()
