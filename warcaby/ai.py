@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import math
+from .board import Board
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Input
 
@@ -8,6 +9,7 @@ from tensorflow.keras.layers import Dense, Input
 class CheckersAIModel:
     def __init__(self):
         model_filepath = "trained_checkers_model.h5"
+        self.board = Board()  # Przechowywanie obiektu Board
         if os.path.exists(model_filepath):
             self.model = self.load_model(model_filepath)
             print("Wczytano poprawnie model z pliku")
@@ -47,45 +49,43 @@ class CheckersAIModel:
         print("Trening zakończony!")
 
     def generate_valid_move(self, board_state):
+        print("Rozpoczynam generowanie ruchu dla komputera...")
         board_array = self.convert_board_to_array(board_state)
+        print("Tablica reprezentująca planszę:", board_array)
+
         predictions = self.model.predict(board_array)[0]
+        print("Predykcje modelu:", predictions)
+
         sorted_indices = np.argsort(-predictions)
+        print("Indeksy posortowane według prawdopodobieństwa:", sorted_indices)
 
         black_positions = self.get_black_positions(board_state)
-        black_positions.sort(key=lambda pos: self.distance_from_center(pos))
+        print("Pozycje czarnych pionków:", black_positions)
 
+        # Sprawdź możliwe bicia
         for from_pos in black_positions:
+
+            captures = self.get_valid_captures(board_state, from_pos)
+            print(f"board_state: {board_state}", f"from_pos: {from_pos}")
+            if captures:
+                print(
+                    f"Znaleziono możliwe bicia dla pionka na polu {from_pos}: {captures}"
+                )
+                return captures[0]  # Wybieramy pierwsze bicie
+
+        # Jeśli brak bić, wykonaj standardowy ruch
+        for from_pos in black_positions:
+            print(f"Przetwarzam ruchy dla pionka na polu {from_pos}")
             for idx in sorted_indices:
                 to_pos = idx % 64 + 1
-                try:
-                    fr, fc = self.position_to_coords(from_pos)
-                    tr, tc = self.position_to_coords(to_pos)
+                move = f"{from_pos}-{to_pos}"
+                print(f"Sprawdzam ruch: {move}")
 
-                    if not (0 <= tr < 8 and 0 <= tc < 8):
-                        continue
+                if self.is_valid_move(board_state, move):
+                    print("Znaleziono poprawny ruch:", move)
+                    return move
 
-                    move = f"{from_pos}-{to_pos}"
-                    print(
-                        f"Proponowany ruch dla czarnej figury na polu {from_pos}: {move} "
-                        f"(szac. prawdopodobieństwo: {predictions[idx]:.4f})"
-                    )
-
-                    if self.is_valid_move(board_state, move):
-                        print("Znaleziono poprawny ruch:", move)
-                        return move
-
-                except ValueError as e:
-                    print(f"Błąd przy sprawdzaniu ruchu: {e}")
-                    continue
-
-        raise ValueError("Nie można wygenerować prawidłowego ruchu.")
-
-    def distance_from_center(self, pos):
-
-        r, c = self.position_to_coords(pos)
-        center_r, center_c = 3.5, 3.5
-        return math.sqrt((r - center_r) ** 2 + (c - center_c) ** 2)
-
+        print("Nie znaleziono poprawnego ruchu.")
         raise ValueError("Nie można wygenerować prawidłowego ruchu.")
 
     def convert_board_to_array(self, board_state):
@@ -100,23 +100,42 @@ class CheckersAIModel:
         return board_array
 
     def is_valid_move(self, board, move):
+        print(f"Sprawdzam poprawność ruchu: {move}")
         try:
             fp, tp = map(int, move.split("-"))
             fr, fc = self.position_to_coords(fp)
             tr, tc = self.position_to_coords(tp)
+            print(f"Pola: Startowe ({fr}, {fc}), Docelowe ({tr}, {tc})")
+
             if board[fr][fc] != "B":
+                print(
+                    f"Nieprawidłowy ruch: Pole startowe {fp} nie zawiera czarnego pionka."
+                )
+                return False
+            if not (0 <= tr < 8 and 0 <= tc < 8):
+                print("Nieprawidłowy ruch: Pole docelowe poza planszą.")
                 return False
             if board[tr][tc] is not None:
+                print("Nieprawidłowy ruch: Pole docelowe jest zajęte.")
                 return False
+
+            # Ruch standardowy
             if abs(fr - tr) == 1 and abs(fc - tc) == 1:
+                print("Ruch standardowy jest poprawny.")
                 return True
+
+            # Ruch z biciem
             if abs(fr - tr) == 2 and abs(fc - tc) == 2:
-                mr = (fr + tr) // 2
-                mc = (fc + tc) // 2
+                mr, mc = (fr + tr) // 2, (fc + tc) // 2
+                print(f"Pole środkowe: ({mr}, {mc})")
                 if board[mr][mc] == "W":
+                    print("Ruch z biciem jest poprawny.")
                     return True
+
+            print("Nieprawidłowy ruch.")
             return False
-        except ValueError:
+        except ValueError as e:
+            print(f"Nieprawidłowy ruch: {e}")
             return False
 
     def position_to_coords(self, pos):
@@ -151,10 +170,48 @@ class CheckersAIModel:
             self.save_model("trained_checkers_model.h5")
 
     def get_black_positions(self, board_state):
+        print("Zaczynam identyfikację pozycji czarnych pionków...")
         black_positions = []
         for row in range(8):
             for col in range(8):
                 if board_state[row][col] == "B":
                     pos = self.coords_to_position(row, col)
                     black_positions.append(pos)
+                    print(
+                        f"Znaleziono czarny pionek na polu: {pos} (współrzędne: {row}, {col})"
+                    )
+        print(f"Wszystkie pozycje czarnych pionków: {black_positions}")
         return black_positions
+
+    def get_valid_captures(self, board_state, from_pos):
+        print(f"Sprawdzam możliwe bicia dla pionka na polu {from_pos}...")
+        captures = []
+        fr, fc = self.position_to_coords(from_pos)
+        print(f"Współrzędne pola startowego: ({fr}, {fc})")
+
+        directions = [(-2, -2), (-2, 2), (2, -2), (2, 2)]
+        for dr, dc in directions:
+            tr, tc = fr + dr, fc + dc
+            if 0 <= tr < 8 and 0 <= tc < 8:
+                mr, mc = fr + dr // 2, fc + dc // 2
+                print(
+                    f"Sprawdzam kierunek: ({dr}, {dc}) -> Docelowe: ({tr}, {tc}), Środkowe: ({mr}, {mc})"
+                )
+
+                if (
+                    board_state[mr][mc] == "W"  # Pionek przeciwnika
+                    and board_state[tr][tc] is None  # Pole docelowe jest puste
+                ):
+                    to_pos = self.coords_to_position(tr, tc)
+                    print(f"Znaleziono możliwe bicie: {from_pos}-{to_pos}")
+                    captures.append(f"{from_pos}-{to_pos}")
+
+                    # Po znalezieniu poprawnego bicia, usuń pionek przeciwnika
+                    self.board.perform_capture(
+                        from_pos, to_pos
+                    )  # Usuwanie pionka przeciwnika
+                    break  # Zatrzymujemy pętlę, wybieramy pierwsze dostępne bicie
+
+        if not captures:
+            print("Brak możliwych bić dla tego pionka.")
+        return captures
