@@ -2,8 +2,10 @@
 
 
 class Board:
+
     def __init__(self):
         # board 8x8, B = black, W = white
+        # self.checkersAIModel = CheckersAIModel()
         self.grid = [[None for _ in range(8)] for _ in range(8)]
         self.initialize_pieces()
 
@@ -49,17 +51,12 @@ class Board:
     def remove_piece(self, row, col):
         self.grid[row][col] = None
 
-    def perform_capture(self, from_pos, to_pos):
-        fr, fc = self.position_to_coords(from_pos)
-        tr, tc = self.position_to_coords(to_pos)
+    def position_to_coords(self, pos):
+        if not (1 <= pos <= 64):
+            raise ValueError(
+                f"Nieprawidłowy numer pola: {pos}. Musi być w zakresie 1–64."
+            )
 
-        # Wylicz pole środkowe
-        mr, mc = (fr + tr) // 2, (fc + tc) // 2
-        print(f"Bicie! Usuwam pionek przeciwnika z pola ({mr}, {mc})")
-
-        # Usuwamy pionek przeciwnika
-        self.remove_piece(mr, mc)
-
-        # Przenosimy nasz pionek
-        self.move_piece(fr, fc, tr, tc)
-        print(f"Pionek przeniesiony z ({fr}, {fc}) na ({tr}, {tc})")
+        r = (pos - 1) // 4
+        c = ((pos - 1) % 4) * 2 + (1 if r % 2 == 0 else 0)
+        return r, c

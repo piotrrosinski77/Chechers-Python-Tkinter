@@ -8,8 +8,8 @@ from tensorflow.keras.layers import Dense, Input
 
 class CheckersAIModel:
     def __init__(self):
-        model_filepath = "trained_checkers_model.h5"
         self.board = Board()  # Przechowywanie obiektu Board
+        model_filepath = "trained_checkers_model.h5"
         if os.path.exists(model_filepath):
             self.model = self.load_model(model_filepath)
             print("Wczytano poprawnie model z pliku")
@@ -183,35 +183,29 @@ class CheckersAIModel:
         print(f"Wszystkie pozycje czarnych pionków: {black_positions}")
         return black_positions
 
-    def get_valid_captures(self, board_state, from_pos):
-        print(f"Sprawdzam możliwe bicia dla pionka na polu {from_pos}...")
-        captures = []
+    def get_valid_captures(self, board, from_pos):
         fr, fc = self.position_to_coords(from_pos)
-        print(f"Współrzędne pola startowego: ({fr}, {fc})")
+        captures = []
 
-        directions = [(-2, -2), (-2, 2), (2, -2), (2, 2)]
+        # Przykładowa logika sprawdzania bicia
+        directions = [(2, 2), (2, -2), (-2, 2), (-2, -2)]
         for dr, dc in directions:
-            tr, tc = fr + dr, fc + dc
-            if 0 <= tr < 8 and 0 <= tc < 8:
-                mr, mc = fr + dr // 2, fc + dc // 2
-                print(
-                    f"Sprawdzam kierunek: ({dr}, {dc}) -> Docelowe: ({tr}, {tc}), Środkowe: ({mr}, {mc})"
-                )
+            tr = fr + dr
+            tc = fc + dc
+            mr = (fr + tr) // 2
+            mc = (fc + tc) // 2
 
+            # Sprawdzamy, czy w polu (mr, mc) jest przeciwnik, i czy (tr, tc) jest puste
+            if 0 <= tr < 8 and 0 <= tc < 8:
                 if (
-                    board_state[mr][mc] == "W"  # Pionek przeciwnika
-                    and board_state[tr][tc] is None  # Pole docelowe jest puste
+                    board[fr][fc] == "B"
+                    and board[mr][mc] == "W"
+                    and board[tr][tc] is None
                 ):
                     to_pos = self.coords_to_position(tr, tc)
-                    print(f"Znaleziono możliwe bicie: {from_pos}-{to_pos}")
-                    captures.append(f"{from_pos}-{to_pos}")
+                    print(f"Znaleziono możliwe bicie: {from_pos}x{to_pos}")
+                    captures.append(f"{from_pos}x{to_pos}")
+                    # Dokonujemy bicia na instancji board
+                    # board.perform_capture(from_pos, to_pos)
 
-                    # Po znalezieniu poprawnego bicia, usuń pionek przeciwnika
-                    self.board.perform_capture(
-                        from_pos, to_pos
-                    )  # Usuwanie pionka przeciwnika
-                    break  # Zatrzymujemy pętlę, wybieramy pierwsze dostępne bicie
-
-        if not captures:
-            print("Brak możliwych bić dla tego pionka.")
         return captures

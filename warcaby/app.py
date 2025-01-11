@@ -4,6 +4,7 @@ from .board import Board
 from .data import data_loader
 from .ai import CheckersAIModel
 
+
 class CheckersApp:
     def __init__(self, master):
         self.master = master
@@ -34,8 +35,7 @@ class CheckersApp:
             for col in range(8):
                 color = "white" if (row + col) % 2 == 0 else "black"
                 self.canvas.create_rectangle(
-                    col * 75, row * 75, (col + 1) * 75,
-                    (row + 1) * 75, fill=color
+                    col * 75, row * 75, (col + 1) * 75, (row + 1) * 75, fill=color
                 )
 
                 if self.selected_piece and (row, col) in self.possible_moves:
@@ -62,8 +62,7 @@ class CheckersApp:
 
     def draw_3d_piece(self, x, y, color, shadow_color):
         self.canvas.create_oval(
-            x - 30, y - 30, x + 30, y + 30, 
-            fill=shadow_color, outline=shadow_color
+            x - 30, y - 30, x + 30, y + 30, fill=shadow_color, outline=shadow_color
         )
         self.canvas.create_oval(
             x - 27, y - 27, x + 27, y + 27, fill=color, outline="black"
@@ -112,8 +111,14 @@ class CheckersApp:
 
     def position_to_coords(self, position):
         row = (position - 1) // 4
-        col = ((position - 1) % 4) * 2 + (1 if row % 2 == 0 else 0)
+        col = ((position - 1) % 4) * 2 + (1 if row % 2 == 0 else 2)
         print(f"Converted position {position} to coordinates ({row}, {col})")
+        return row, col
+
+    def position_to_coordsx(self, pos):
+        row = (pos - 1) // 4
+        col = ((pos - 1) % 4) * 2 + (1 if row % 2 == 0 else 2)
+        print(f"Converted position {pos} to coordinates ({row}, {col})")
         return row, col
 
     def handle_computer_move(self):
@@ -147,7 +152,7 @@ class CheckersApp:
                 to_pos = int(to_pos_str)
 
                 capture_pos = (from_pos + to_pos) // 2
-                capture_coords = self.position_to_coords(capture_pos)
+                capture_coords = self.position_to_coordsx(capture_pos)
 
                 if piece_color == "B":
                     print(f"Removing captured piece at {capture_coords}")
@@ -156,16 +161,21 @@ class CheckersApp:
                 from_coords = self.position_to_coords(from_pos)
                 to_coords = self.position_to_coords(to_pos)
 
-                self.board.move_piece(from_coords[0], from_coords[1], to_coords[0], to_coords[1])
+                self.board.move_piece(
+                    from_coords[0], from_coords[1], to_coords[0], to_coords[1]
+                )
                 from_pos = to_pos
         else:
             from_pos, to_pos = map(int, move.split("-"))
             from_coords = self.position_to_coords(from_pos)
             to_coords = self.position_to_coords(to_pos)
-            self.board.move_piece(from_coords[0], from_coords[1], to_coords[0], to_coords[1])
+            self.board.move_piece(
+                from_coords[0], from_coords[1], to_coords[0], to_coords[1]
+            )
 
         self.draw_board()
         self.draw_pieces()
+
 
 if __name__ == "__main__":
     root = tk.Tk()
