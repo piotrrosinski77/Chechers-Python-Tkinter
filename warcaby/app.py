@@ -3,6 +3,7 @@ from tkinter import PhotoImage
 from .board import Board
 from .data import data_loader
 from .ai import CheckersAIModel
+import math
 
 
 class CheckersApp:
@@ -111,14 +112,8 @@ class CheckersApp:
 
     def position_to_coords(self, position):
         row = (position - 1) // 4
-        col = ((position - 1) % 4) * 2 + (1 if row % 2 == 0 else 2)
+        col = ((position - 1) % 4) * 2 + (1 if (row % 2 == 0) else 0)
         print(f"Converted position {position} to coordinates ({row}, {col})")
-        return row, col
-
-    def position_to_coordsx(self, pos):
-        row = (pos - 1) // 4
-        col = ((pos - 1) % 4) * 2 + (1 if row % 2 == 0 else 2)
-        print(f"Converted position {pos} to coordinates ({row}, {col})")
         return row, col
 
     def handle_computer_move(self):
@@ -146,13 +141,40 @@ class CheckersApp:
 
     def process_single_move(self, move, piece_color):
         if "x" in move:
+            
             positions = move.split("x")
             from_pos = int(positions[0])
+            
             for to_pos_str in positions[1:]:
+                
                 to_pos = int(to_pos_str)
 
-                capture_pos = (from_pos + to_pos) // 2
-                capture_coords = self.position_to_coordsx(capture_pos)
+                if from_pos in (
+                    5,
+                    6,
+                    7,
+                    8,
+                    13,
+                    14,
+                    15,
+                    16,
+                    21,
+                    22,
+                    23,
+                    24,
+                    29,
+                    30,
+                    31,
+                    32,
+                ):
+
+                    capture_pos = int(math.floor((from_pos + to_pos) / 2))
+
+                else:
+
+                    capture_pos = int(math.ceil((from_pos + to_pos) / 2))
+
+                capture_coords = self.position_to_coords(capture_pos)
 
                 if piece_color == "B":
                     print(f"Removing captured piece at {capture_coords}")
