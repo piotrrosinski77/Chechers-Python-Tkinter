@@ -198,6 +198,19 @@ class CheckersApp:
         self.draw_board()
         self.draw_pieces()
 
+# TO DO:
+# IMPORTANT!!!
+# - Add a way for the player to remove a piece from the board
+# - Add a way for the player to move back not only forward
+
+# optional:
+# - Add a way for the player to reset the board to its initial state
+# - Add a way for the player to undo the last move
+# - Add a way for the player to redo the last move
+# - Add a way for the player to save the current game state to a file
+# - Add a way for the player to load a game state from a file
+# - Change the color of the possible moves (it's much too dark)
+
 
 if __name__ == "__main__":
     root = tk.Tk()
