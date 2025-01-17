@@ -84,3 +84,25 @@ class Board:
         r = (pos - 1) // 4
         c = ((pos - 1) % 4) * 2 + (1 if r % 2 == 0 else 0)
         return r, c
+
+    def get_possible_captures(self, row, col):
+        piece = self.grid[row][col]
+        if piece != "W":
+            return []
+
+        directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+        captures = []
+
+        for dr, dc in directions:
+            mid_r, mid_c = row + dr, col + dc
+            dest_r, dest_c = row + 2 * dr, col + 2 * dc
+
+            if (
+                0 <= mid_r < 8
+                and 0 <= mid_c < 8
+                and 0 <= dest_r < 8
+                and 0 <= dest_c < 8
+            ):
+                if self.grid[mid_r][mid_c] == "B" and self.grid[dest_r][dest_c] is None:
+                    captures.append((dest_r, dest_c))
+        return captures

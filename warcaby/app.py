@@ -49,6 +49,16 @@ class CheckersApp:
                         stipple="gray50",
                     )
 
+                    if self.selected_piece and (row, col) in self.possible_captures:
+                        self.canvas.create_rectangle(
+                            col * 75,
+                            row * 75,
+                            (col + 1) * 75,
+                            (row + 1) * 75,
+                            fill="red",
+                            stipple="gray50",
+                        )
+
     def draw_pieces(self):
         for row in range(8):
             for col in range(8):
@@ -90,12 +100,21 @@ class CheckersApp:
         if clicked_piece == "W":
             self.selected_piece = (row, col)
             self.possible_moves = self.board.get_possible_moves(row, col)
+            self.possible_captures = self.board.get_possible_captures(row, col)
             print(f"Player selected piece at: {self.selected_piece}")
             print(f"with possible moves: {self.possible_moves}")
+            print(f"with possible captures: {self.possible_captures}")
+
         elif self.selected_piece and (row, col) in self.possible_moves:
             old_row, old_col = self.selected_piece
             self.board.grid[row][col] = "W"
             self.board.grid[old_row][old_col] = None
+
+            if self.selected_piece and (row, col) in self.possible_captures:
+                if abs(old_row - row) == 2 and abs(old_col - col) == 2:
+                    capture_row = (old_row + row) // 2
+                    capture_col = (old_col + col) // 2
+                    self.board.remove_piece(capture_row, capture_col)
 
             self.selected_piece = None
             self.possible_moves = []
@@ -201,8 +220,8 @@ class CheckersApp:
 
 # TO DO:
 # IMPORTANT!!!
-# - Add a way for the player to remove a piece from the board
-# - Add a way for the player to move back not only forward
+###DONE#### - Add a way for the player to remove a piece from the board
+###DONE### - Add a way for the player to move back not only forward
 
 # optional:
 # - Add a way for the player to reset the board to its initial state
@@ -210,7 +229,7 @@ class CheckersApp:
 # - Add a way for the player to redo the last move
 # - Add a way for the player to save the current game state to a file
 # - Add a way for the player to load a game state from a file
-# - Change the color of the possible moves (it's much too dark)
+###DONE### - Change the color of the possible moves (it's much too dark)
 
 
 if __name__ == "__main__":
