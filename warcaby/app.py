@@ -8,7 +8,24 @@ import math
 
 class CheckersApp:
     def __init__(self, master):
+
         self.master = master
+        self.master.configure(bg="black")
+        self.game_label = tk.Label(
+            self.master,
+            text="Click on a white piece to start the game!🚀",
+            font=("Helvetica", 16, "bold italic"),
+            fg="#FFD700",
+            bg="#2C2C2C",
+            relief="ridge",
+            bd=4,
+            padx=8,
+            pady=4,
+        )
+
+        if self.game_label.winfo_exists():
+            self.animate_label()
+        self.game_label.pack()
         self.board = Board()
         self.selected_piece = None
         self.possible_moves = []
@@ -20,6 +37,19 @@ class CheckersApp:
 
         self.create_widgets()
         self.train_model()
+
+    def animate_label(self):
+        if self.game_label and self.game_label.winfo_exists():
+            current_color = self.game_label.cget("fg")
+            next_color = "gold" if current_color == "orange" else "orange"
+            self.game_label.config(fg=next_color)
+            self.master.after(250, self.animate_label)
+
+    def update_game_label(self):
+        if self.player_turn:
+            self.game_label.config(text="Player's turn")
+        else:
+            self.game_label.config(text="Computer's turn")
 
     def create_widgets(self):
         self.canvas = tk.Canvas(self.master, width=600, height=600)
@@ -80,6 +110,10 @@ class CheckersApp:
         )
 
     def on_click(self, event):
+
+        if self.game_label.winfo_exists():
+            self.update_game_label()
+
         if not self.player_turn:
             print("Computer's turn - please wait...")
             return
@@ -120,6 +154,8 @@ class CheckersApp:
             self.possible_moves = []
 
             self.player_turn = False
+            if self.game_label.winfo_exists():
+                self.update_game_label()
             print("Player's move completed, switching to computer's turn.")
             self.draw_board()
             self.draw_pieces()
@@ -142,6 +178,8 @@ class CheckersApp:
         self.current_move += 1
 
         self.player_turn = True
+        if self.game_label.winfo_exists():
+            self.update_game_label()
         print("Computer's move completed, switching to player's turn.")
         self.draw_board()
         self.draw_pieces()
@@ -234,7 +272,7 @@ class CheckersApp:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.geometry("600x600")
+    root.geometry("675x675")
     root.title("Checkers")
     icon_path = "img/icon.png"
     icon_image = PhotoImage(file=icon_path)
