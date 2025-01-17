@@ -17,6 +17,7 @@ class Board:
                 if (row + col) % 2 == 1:
                     self.grid[row][col] = "W"
 
+    """
     def get_possible_moves(self, row, col):
         piece = self.grid[row][col]
         moves = []
@@ -37,6 +38,31 @@ class Board:
                 if col + 1 < 8 and self.grid[row - 1][col + 1] is None:
                     moves.append((row - 1, col + 1))
 
+        return moves
+    """
+
+    def get_possible_moves(self, row, col):
+        piece = self.grid[row][col]
+        if piece is None:
+            return []
+
+        directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+        if piece == "W":
+            directions += [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+        elif piece == "B":
+            directions += [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+
+        moves = []
+
+        for dr, dc in directions:
+            r, c = row + dr, col + dc
+            if 0 <= r < 8 and 0 <= c < 8:
+                if self.grid[r][c] is None:
+                    moves.append((r, c))
+                elif self.grid[r][c] != piece:
+                    r2, c2 = r + dr, c + dc
+                    if 0 <= r2 < 8 and 0 <= c2 < 8 and self.grid[r2][c2] is None:
+                        moves.append((r2, c2))
         return moves
 
     def move_piece(self, from_row, from_col, to_row, to_col):

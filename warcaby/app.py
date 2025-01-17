@@ -45,7 +45,7 @@ class CheckersApp:
                         row * 75,
                         (col + 1) * 75,
                         (row + 1) * 75,
-                        fill="green",
+                        fill="lime",
                         stipple="gray50",
                     )
 
