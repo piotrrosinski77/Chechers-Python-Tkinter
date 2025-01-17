@@ -1,6 +1,3 @@
-# from .ai import CheckersAIModel  # lub inny odpowiedni import, zależnie od struktury
-
-
 class Board:
 
     def __init__(self):
@@ -54,7 +51,8 @@ class Board:
     def position_to_coords(self, pos):
         if not (1 <= pos <= 64):
             raise ValueError(
-                f"Nieprawidłowy numer pola: {pos}. Musi być w zakresie 1–64."
+                # f"Nieprawidłowy numer pola: {pos}. Musi być w zakresie 1–64."
+                f"Invalid field number: {pos}. Must be in the range 1–64."
             )
 
         r = (pos - 1) // 4

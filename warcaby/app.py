@@ -71,7 +71,7 @@ class CheckersApp:
 
     def on_click(self, event):
         if not self.player_turn:
-            print("Computer's turn - please wait.")
+            print("Computer's turn - please wait...")
             return
 
         row = event.y // 75
@@ -90,8 +90,8 @@ class CheckersApp:
         if clicked_piece == "W":
             self.selected_piece = (row, col)
             self.possible_moves = self.board.get_possible_moves(row, col)
-            print(f"Player selected piece at {self.selected_piece}")
-            print(f"with moves {self.possible_moves}")
+            print(f"Player selected piece at: {self.selected_piece}")
+            print(f"with possible moves: {self.possible_moves}")
         elif self.selected_piece and (row, col) in self.possible_moves:
             old_row, old_col = self.selected_piece
             self.board.grid[row][col] = "W"
@@ -141,12 +141,12 @@ class CheckersApp:
 
     def process_single_move(self, move, piece_color):
         if "x" in move:
-            
+
             positions = move.split("x")
             from_pos = int(positions[0])
-            
+
             for to_pos_str in positions[1:]:
-                
+
                 to_pos = int(to_pos_str)
 
                 if from_pos in (
@@ -197,6 +197,7 @@ class CheckersApp:
 
         self.draw_board()
         self.draw_pieces()
+
 
 # TO DO:
 # IMPORTANT!!!
