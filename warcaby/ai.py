@@ -47,7 +47,8 @@ class CheckersAIModel:
         print(f"Model saved to file: {filepath}")
 
     def train(self, X, y, epochs=1, batch_size=32):
-        print("Rozpoczynam trening modelu...")
+        # print("Rozpoczynam trening modelu...")
+        print("Starting model training...")
         self.model.fit(X, y, epochs=epochs, batch_size=batch_size)
         # print("Trening zakończony!")
         print("Training completed!")
@@ -71,7 +72,7 @@ class CheckersAIModel:
         print("Positions of black pieces:", black_positions)
 
         # Sprawdź możliwe bicia
-        for from_pos in black_positions:
+        for from_pos in reversed(black_positions):
 
             captures = self.get_valid_captures(board_state, from_pos)
             print(f"board_state: {board_state}", f"from_pos: {from_pos}")
@@ -83,7 +84,7 @@ class CheckersAIModel:
                 return captures[0]  # Wybieramy pierwsze bicie
 
         # Jeśli brak bić, wykonaj standardowy ruch
-        for from_pos in black_positions:
+        for from_pos in reversed(black_positions):
             # print(f"Przetwarzam ruchy dla pionka na polu {from_pos}")
             print(f"Processing moves for piece at {from_pos}")
             for idx in sorted_indices:
