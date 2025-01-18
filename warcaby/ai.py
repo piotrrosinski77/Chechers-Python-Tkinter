@@ -47,13 +47,15 @@ class CheckersAIModel:
         print(f"Model saved to file: {filepath}")
 
     def train(self, X, y, epochs=1, batch_size=32):
-        print("Rozpoczynam trening modelu...")
+        # print("Rozpoczynam trening modelu...")
+        print("Starting model training...")
         self.model.fit(X, y, epochs=epochs, batch_size=batch_size)
         # print("Trening zakończony!")
         print("Training completed!")
 
-    def generate_valid_move(self, board_state):
-        print("Rozpoczynam generowanie ruchu dla komputera...")
+    def generate_valid_move(self, board_state, last_computer_move):
+        # print("Rozpoczynam generowanie ruchu dla komputera...")
+        print("Starting computer move generation...")
         board_array = self.convert_board_to_array(board_state)
         # print("Tablica reprezentująca planszę:", board_array)
         print("Board array representation:", board_array)
@@ -92,7 +94,7 @@ class CheckersAIModel:
                 # print(f"Sprawdzam ruch: {move}")
                 print(f"Checking move: {move}")
 
-                if self.is_valid_move(board_state, move):
+                if self.is_valid_move(board_state, move, last_computer_move):
                     # print("Znaleziono poprawny ruch:", move)
                     print("Found a valid move:", move)
                     return move
@@ -113,7 +115,9 @@ class CheckersAIModel:
                     board_array[0, index] = 2.0
         return board_array
 
-    def is_valid_move(self, board, move):
+    def is_valid_move(self, board, move, last_computer_move):
+        # from .app import last_computer_move
+
         # print(f"Sprawdzam poprawność ruchu: {move}")
         print(f"Checking move validity: {move}")
         try:
@@ -139,6 +143,36 @@ class CheckersAIModel:
                 # print("Nieprawidłowy ruch: Pole docelowe jest zajęte.")
                 print("Invalid move: Target position is occupied.")
                 return False
+
+            if last_computer_move is not None:
+
+                last_computer_move = f"{last_computer_move[0]}-{last_computer_move[1]}"
+
+                try:
+
+                    if last_computer_move[3]:
+                        r_last_computer_move = f"{last_computer_move[2]}{last_computer_move[3]}-{last_computer_move[0]}"
+
+                except IndexError:
+
+                    r_last_computer_move = (
+                        f"{last_computer_move[2]}-{last_computer_move[0]}"
+                    )
+
+                print(f"Last computer move: {last_computer_move}")
+                print(f"Reversed last computer move: {r_last_computer_move}")
+
+                if move == last_computer_move or move == r_last_computer_move:
+                    print(
+                        "Nieprawidłowy ruch: Ruch jest taki sam jak poprzedni ruch komputera."
+                    )
+                    print(
+                        "Invalid move: Move is the same as the previous computer move."
+                    )
+                    return False
+
+            else:
+                print("No last computer move.")
 
             # Ruch standardowy
             if abs(fr - tr) == 1 and abs(fc - tc) == 1:
