@@ -30,6 +30,7 @@ class CheckersApp:
         self.selected_piece = None
         self.possible_moves = []
         self.player_turn = True
+        self.last_computer_move = None
 
         self.model = CheckersAIModel()
         self.historical_moves = data_loader()
@@ -172,7 +173,8 @@ class CheckersApp:
         return row, col
 
     def handle_computer_move(self):
-        move = self.model.generate_valid_move(self.board.grid)
+        move = self.model.generate_valid_move(self.board.grid,
+                                              self.last_computer_move)
         print(f"Computer's move: {move}")
         self.process_move(move, "B")
         self.current_move += 1
@@ -251,6 +253,9 @@ class CheckersApp:
             self.board.move_piece(
                 from_coords[0], from_coords[1], to_coords[0], to_coords[1]
             )
+
+        if piece_color == "B":
+            self.last_computer_move = (from_pos, to_pos)
 
         self.draw_board()
         self.draw_pieces()
