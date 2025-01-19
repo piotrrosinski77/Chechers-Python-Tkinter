@@ -116,7 +116,6 @@ class CheckersAIModel:
         return board_array
 
     def is_valid_move(self, board, move, last_computer_move):
-        # from .app import last_computer_move
 
         # print(f"Sprawdzam poprawność ruchu: {move}")
         print(f"Checking move validity: {move}")
@@ -163,9 +162,8 @@ class CheckersAIModel:
                 print(f"Reversed last computer move: {r_last_computer_move}")
 
                 if move == last_computer_move or move == r_last_computer_move:
-                    print(
-                        "Nieprawidłowy ruch: Ruch jest taki sam jak poprzedni ruch komputera."
-                    )
+                    # print(
+                    # "Nieprawidłowy ruch: Ruch jest taki sam jak poprzedni ruch komputera.")
                     print(
                         "Invalid move: Move is the same as the previous computer move."
                     )

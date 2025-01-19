@@ -31,6 +31,7 @@ class CheckersApp:
         self.possible_moves = []
         self.player_turn = True
         self.last_computer_move = None
+        self.game_runs = False
 
         self.model = CheckersAIModel()
         self.historical_moves = data_loader()
@@ -51,6 +52,55 @@ class CheckersApp:
             self.game_label.config(text="Player's turn")
         else:
             self.game_label.config(text="Computer's turn")
+
+    def game_over(self, winner):
+        self.game_label.config(text=f"Game Over! {winner} wins!")
+        # self.game_label.place(relx=0.5, rely=0.5, anchor="center")
+
+    def check_game_over(self):
+        white_pieces = sum(row.count("W") for row in self.board.grid)
+        black_pieces = sum(row.count("B") for row in self.board.grid)
+
+        if white_pieces == 0:
+            self.game_over("Black")
+            return True
+        elif black_pieces == 0:
+            self.game_over("White")
+            return True
+
+        if self.player_turn:
+            possible_moves = any(
+                self.board.get_possible_moves(row, col)
+                for row in range(8)
+                for col in range(8)
+                if self.board.grid[row][col] == "W"
+            )
+            possible_captures = any(
+                self.board.get_possible_captures(row, col)
+                for row in range(8)
+                for col in range(8)
+                if self.board.grid[row][col] == "W"
+            )
+        else:
+            possible_moves = any(
+                self.board.get_possible_moves(row, col)
+                for row in range(8)
+                for col in range(8)
+                if self.board.grid[row][col] == "B"
+            )
+            possible_captures = any(
+                self.board.get_possible_captures(row, col)
+                for row in range(8)
+                for col in range(8)
+                if self.board.grid[row][col] == "B"
+            )
+
+        if not possible_moves and not possible_captures:
+            winner = "Black" if self.player_turn else "White"
+            self.game_over(winner)
+            return True
+
+        return False
 
     def create_widgets(self):
         self.canvas = tk.Canvas(self.master, width=600, height=600)
@@ -158,10 +208,13 @@ class CheckersApp:
             if self.game_label.winfo_exists():
                 self.update_game_label()
             print("Player's move completed, switching to computer's turn.")
-            self.draw_board()
-            self.draw_pieces()
 
-            self.master.after(1000, self.handle_computer_move)
+            if self.check_game_over():
+                self.check_game_over()
+                self.draw_board()
+                self.draw_pieces()
+            else:
+                self.master.after(1000, self.handle_computer_move)
 
         self.draw_board()
         self.draw_pieces()
@@ -173,8 +226,7 @@ class CheckersApp:
         return row, col
 
     def handle_computer_move(self):
-        move = self.model.generate_valid_move(self.board.grid,
-                                              self.last_computer_move)
+        move = self.model.generate_valid_move(self.board.grid, self.last_computer_move)
         print(f"Computer's move: {move}")
         self.process_move(move, "B")
         self.current_move += 1
@@ -183,8 +235,14 @@ class CheckersApp:
         if self.game_label.winfo_exists():
             self.update_game_label()
         print("Computer's move completed, switching to player's turn.")
-        self.draw_board()
-        self.draw_pieces()
+
+        if self.check_game_over():
+            self.check_game_over()
+            self.draw_board()
+            self.draw_pieces()
+        else:
+            self.draw_board()
+            self.draw_pieces()
 
     def process_move(self, segment, piece_color):
         print(f"Processing move segment: {segment} for piece color {piece_color}")
