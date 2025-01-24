@@ -90,6 +90,9 @@ class Board:
         # if piece != "W":
         #   return []
 
+        if piece is None:
+            return []
+
         directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
         captures = []
 
@@ -103,6 +106,11 @@ class Board:
                 and 0 <= dest_r < 8
                 and 0 <= dest_c < 8
             ):
-                if self.grid[mid_r][mid_c] and self.grid[dest_r][dest_c] is None:
+                mid_piece = self.grid[mid_r][mid_c]
+                if (
+                    mid_piece
+                    and mid_piece != piece
+                    and self.grid[dest_r][dest_c] is None
+                ):
                     captures.append((dest_r, dest_c))
         return captures
