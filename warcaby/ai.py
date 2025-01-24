@@ -172,6 +172,9 @@ class CheckersAIModel:
             else:
                 print("No last computer move.")
 
+            if tr <= fr:
+                return False
+            
             # Ruch standardowy
             if abs(fr - tr) == 1 and abs(fc - tc) == 1:
                 # print("Ruch standardowy jest poprawny.")

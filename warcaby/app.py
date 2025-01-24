@@ -130,15 +130,15 @@ class CheckersApp:
                         stipple="gray50",
                     )
 
-                    if self.selected_piece and (row, col) in self.possible_captures:
-                        self.canvas.create_rectangle(
-                            col * 75,
-                            row * 75,
-                            (col + 1) * 75,
-                            (row + 1) * 75,
-                            fill="red",
-                            stipple="gray50",
-                        )
+                if self.selected_piece and (row, col) in self.possible_captures:
+                    self.canvas.create_rectangle(
+                        col * 75,
+                        row * 75,
+                        (col + 1) * 75,
+                        (row + 1) * 75,
+                        fill="red",
+                        stipple="gray50",
+                    )
 
     def draw_pieces(self):
         for row in range(8):
@@ -190,7 +190,12 @@ class CheckersApp:
             print(f"with possible moves: {self.possible_moves}")
             print(f"with possible captures: {self.possible_captures}")
 
-        elif self.selected_piece and (row, col) in self.possible_moves:
+        elif (
+            self.selected_piece
+            and (row, col) in self.possible_moves
+            or self.selected_piece
+            and (row, col) in self.possible_captures
+        ):
             old_row, old_col = self.selected_piece
             self.board.grid[row][col] = "W"
             self.board.grid[old_row][old_col] = None
