@@ -46,11 +46,11 @@ class Board:
         if piece is None:
             return []
 
-        directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+        directions = []
         if piece == "W":
-            directions += [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+            directions += [(-1, -1), (-1, 1)]
         elif piece == "B":
-            directions += [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+            directions += [(1, -1), (1, 1)]
 
         moves = []
 
