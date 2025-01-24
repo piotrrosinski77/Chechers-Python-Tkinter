@@ -40,6 +40,9 @@ class CheckersApp:
         self.create_widgets()
         self.train_model()
 
+    def wait(self):
+        pass
+
     def animate_label(self):
         if self.game_label and self.game_label.winfo_exists():
             current_color = self.game_label.cget("fg")
@@ -190,36 +193,59 @@ class CheckersApp:
             print(f"with possible moves: {self.possible_moves}")
             print(f"with possible captures: {self.possible_captures}")
 
-        elif (
-            self.selected_piece
-            and (row, col) in self.possible_moves
-            or self.selected_piece
-            and (row, col) in self.possible_captures
-        ):
-            old_row, old_col = self.selected_piece
-            self.board.grid[row][col] = "W"
-            self.board.grid[old_row][old_col] = None
+        if self.selected_piece:
+            if (row, col) in self.possible_captures:
+                old_row, old_col = self.selected_piece
+                self.board.move_piece(old_row, old_col, row, col)
 
-            if self.selected_piece and (row, col) in self.possible_captures:
-                if abs(old_row - row) == 2 and abs(old_col - col) == 2:
-                    capture_row = (old_row + row) // 2
-                    capture_col = (old_col + col) // 2
-                    self.board.remove_piece(capture_row, capture_col)
+                # Znalezione bicie
+                capture_row = (old_row + row) // 2
+                capture_col = (old_col + col) // 2
+                self.board.remove_piece(capture_row, capture_col)
+                print(f"Captured piece at ({capture_row}, {capture_col})")
+                self.possible_moves = []
 
-            self.selected_piece = None
-            self.possible_moves = []
+                self.selected_piece = (row, col)
+                self.possible_captures = self.board.get_possible_captures(row, col)
 
-            self.player_turn = False
-            if self.game_label.winfo_exists():
+                if self.possible_captures:
+                    print(f"Double capture possible at {self.possible_captures}")
+                    self.draw_board()
+                    self.draw_pieces()
+                    return
+
+                self.selected_piece = None
+                self.possible_moves = []
+                self.possible_captures = []
+
+                if self.check_game_over():
+                    return
+
+                self.player_turn = False
                 self.update_game_label()
-            print("Player's move completed, switching to computer's turn.")
-
-            if self.check_game_over():
-                self.check_game_over()
+                print("Player's move completed, switching to computer's turn.")
                 self.draw_board()
                 self.draw_pieces()
-            else:
-                self.master.after(1000, self.handle_computer_move)
+
+                self.master.after(2000, self.handle_computer_move)
+            elif (row, col) in self.possible_moves:
+                old_row, old_col = self.selected_piece
+                self.board.move_piece(old_row, old_col, row, col)
+
+                self.selected_piece = None
+                self.possible_moves = []
+                self.possible_captures = []
+
+                if self.check_game_over():
+                    return
+
+                self.player_turn = False
+                self.update_game_label()
+                print("Player's move completed, switching to computer's turn.")
+                self.draw_board()
+                self.draw_pieces()
+
+                self.master.after(2000, self.handle_computer_move)
 
         self.draw_board()
         self.draw_pieces()
@@ -231,23 +257,38 @@ class CheckersApp:
         return row, col
 
     def handle_computer_move(self):
-        move = self.model.generate_valid_move(self.board.grid, self.last_computer_move)
-        print(f"Computer's move: {move}")
-        self.process_move(move, "B")
-        self.current_move += 1
+        def make_move():
+            move = self.model.generate_valid_move(
+                self.board.grid, self.last_computer_move
+            )
+            print(f"Computer's move: {move}")
+            self.process_move(move, "B")
+            self.current_move += 1
 
-        self.player_turn = True
-        if self.game_label.winfo_exists():
-            self.update_game_label()
-        print("Computer's move completed, switching to player's turn.")
+            if self.check_game_over():
+                return
 
-        if self.check_game_over():
-            self.check_game_over()
-            self.draw_board()
-            self.draw_pieces()
-        else:
-            self.draw_board()
-            self.draw_pieces()
+            if "-" in move:
+                from_pos, to_pos = map(int, move.split("-"))
+            elif "x" in move:
+                from_pos, to_pos = map(int, move.split("x"))
+
+            from_row, from_col = self.position_to_coords(from_pos)
+            to_row, to_col = self.position_to_coords(to_pos)
+
+            self.possible_captures = self.board.get_possible_captures(to_row, to_col)
+            print(f"Possible captures after computer's move: {self.possible_captures}")
+
+            if self.possible_captures:
+                self.master.after(2000, make_move)
+            else:
+                self.player_turn = True
+                self.update_game_label()
+                print("Computer's move completed, switching to player's turn.")
+                self.draw_board()
+                self.draw_pieces()
+
+        make_move()
 
     def process_move(self, segment, piece_color):
         print(f"Processing move segment: {segment} for piece color {piece_color}")
