@@ -51,18 +51,28 @@ class Board:
             directions += [(-1, -1), (-1, 1)]
         elif piece == "B":
             directions += [(1, -1), (1, 1)]
+        elif piece == "WK" or piece == "BK":
+            directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
 
         moves = []
 
         for dr, dc in directions:
             r, c = row + dr, col + dc
-            if 0 <= r < 8 and 0 <= c < 8:
+            while 0 <= r < 8 and 0 <= c < 8:
                 if self.grid[r][c] is None:
                     moves.append((r, c))
+                    if piece == "WK" or piece == "BK":
+                        r += dr
+                        c += dc
+                    else:
+                        break
                 elif self.grid[r][c] != piece:
                     r2, c2 = r + dr, c + dc
                     if 0 <= r2 < 8 and 0 <= c2 < 8 and self.grid[r2][c2] is None:
                         moves.append((r2, c2))
+                    break
+                else:
+                    break
         return moves
 
     def move_piece(self, from_row, from_col, to_row, to_col):
@@ -70,7 +80,11 @@ class Board:
         self.grid[to_row][to_col] = self.grid[from_row][from_col]
         self.grid[from_row][from_col] = None
         # place to add additional rules...
-
+        '''
+        if piece_color == "B" and to_row == 7:
+            self.board.grid[to_row][to_col] = "BK"
+            print(f"Promoting black piece at {to_row, to_col} to king")
+        '''
     def remove_piece(self, row, col):
         self.grid[row][col] = None
 
@@ -113,4 +127,44 @@ class Board:
                     and self.grid[dest_r][dest_c] is None
                 ):
                     captures.append((dest_r, dest_c))
+
+            if piece == "WK" or piece == "BK":
+                mid_r += dr
+                mid_c += dc
+                dest_r += 2 * dr
+                dest_c += 2 * dc
+
+                for dr, dc in directions:
+                    if (0 <= mid_r < 8 and 0 <= mid_c < 8 and 0 <= dest_r < 8 and 0 <= dest_c < 8):
+                        mid_piece = self.grid[mid_r][mid_c]
+                    if (
+                        mid_piece
+                        and mid_piece != piece
+                        and self.grid[dest_r][dest_c] is None
+                    ):
+                        captures.append((dest_r, dest_c))
+                        break
         return captures
+        """
+            if (
+                0 <= mid_r < 8
+                and 0 <= mid_c < 8
+                and 0 <= dest_r < 8
+                and 0 <= dest_c < 8
+            ):
+                mid_piece = self.grid[mid_r][mid_c]
+                if (
+                    mid_piece
+                    and mid_piece != piece
+                    and self.grid[dest_r][dest_c] is None
+                ):
+                    captures.append((dest_r, dest_c))
+
+            if piece == "WK" or piece == "BK":
+                mid_r += dr
+                mid_c += dc
+                dest_r += 2 * dr
+                dest_c += 2 * dc
+                captures.append((dest_r, dest_c))
+        return captures
+"""
