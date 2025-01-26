@@ -67,7 +67,6 @@ class CheckersApp:
 
     def game_over(self, winner):
         self.game_label.config(text=f"Game Over! {winner} wins!")
-        # self.game_label.place(relx=0.5, rely=0.5, anchor="center")
 
     def check_game_over(self):
         white_pieces = sum(row.count("W") for row in self.board.grid)
@@ -237,15 +236,7 @@ class CheckersApp:
                 self.player_turn = False
                 self.update_game_label()
                 print("Player's move completed, switching to computer's turn.")
-            
-                '''
-                if row == 0:
-                    self.grid[row][col] = "WK"
-                    print(f"Promoting white piece at ({row}, {col}) to king")
-                '''
-
                 self.promote_to_king(row, col)
-                
                 self.draw_board()
                 self.draw_pieces()
 
@@ -253,9 +244,6 @@ class CheckersApp:
             elif (row, col) in self.possible_moves:
                 old_row, old_col = self.selected_piece
                 self.board.move_piece(old_row, old_col, row, col)
-
-                # self.board.promote_to_king(row, col)
-
                 self.selected_piece = None
                 self.possible_moves = []
                 self.possible_captures = []
@@ -266,17 +254,12 @@ class CheckersApp:
                 self.player_turn = False
                 self.update_game_label()
                 print("Player's move completed, switching to computer's turn.")
-                if row == 0:
-                    self.grid[row][col] = "WK"
-                    print(f"Promoting white piece at ({row}, {col}) to king")
+                self.promote_to_king(row, col)
                 self.draw_board()
                 self.draw_pieces()
 
                 self.master.after(2000, self.handle_computer_move)
 
-        if row == 0:
-            self.grid[row][col] = "WK"
-            print(f"Promoting white piece at ({row}, {col}) to king")
         self.draw_board()
         self.draw_pieces()
 

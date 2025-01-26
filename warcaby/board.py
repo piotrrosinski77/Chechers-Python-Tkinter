@@ -1,18 +1,15 @@
 class Board:
 
     def __init__(self):
-        # board 8x8, B = black, W = white
-        # self.checkersAIModel = CheckersAIModel()
         self.grid = [[None for _ in range(8)] for _ in range(8)]
         self.initialize_pieces()
 
     def initialize_pieces(self):
-        # white pieces are at the bottom of the window
-        for row in range(3):  # black pieces
+        for row in range(3):
             for col in range(8):
                 if (row + col) % 2 == 1:
                     self.grid[row][col] = "B"
-        for row in range(5, 8):  # white pieces
+        for row in range(5, 8):
             for col in range(8):
                 if (row + col) % 2 == 1:
                     self.grid[row][col] = "W"
@@ -76,22 +73,15 @@ class Board:
         return moves
 
     def move_piece(self, from_row, from_col, to_row, to_col):
-        # move piece (from_row, from_col) do (to_row, to_col)
         self.grid[to_row][to_col] = self.grid[from_row][from_col]
         self.grid[from_row][from_col] = None
-        # place to add additional rules...
-        '''
-        if piece_color == "B" and to_row == 7:
-            self.board.grid[to_row][to_col] = "BK"
-            print(f"Promoting black piece at {to_row, to_col} to king")
-        '''
+
     def remove_piece(self, row, col):
         self.grid[row][col] = None
 
     def position_to_coords(self, pos):
         if not (1 <= pos <= 64):
             raise ValueError(
-                # f"Nieprawidłowy numer pola: {pos}. Musi być w zakresie 1–64."
                 f"Invalid field number: {pos}. Must be in the range 1–64."
             )
 
@@ -101,8 +91,6 @@ class Board:
 
     def get_possible_captures(self, row, col):
         piece = self.grid[row][col]
-        # if piece != "W":
-        #   return []
 
         if piece is None:
             return []
