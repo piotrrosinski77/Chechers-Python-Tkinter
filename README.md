@@ -4,5 +4,4 @@ TkCheckers is a classic checkers game built using Python and the Tkinter library
 
 
 <img src="img/ch1.png" width="300px"> <img src="img/ch2.png" width="300px"> <img src="img/ch3.png" width="300px">
-
 <img src="img/ch4.png" width="300px"><img src="img/ch5.png" width="300px"><img src="img/ch6.png" width="300px">
