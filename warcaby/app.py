@@ -43,6 +43,15 @@ class CheckersApp:
     def wait(self):
         pass
 
+    def promote_to_king(self, row, col):
+        piece = self.board.grid[row][col]
+        if piece == "W" and row == 0:
+            self.board.grid[row][col] = "WK"
+            print(f"Promoting white piece at ({row}, {col}) to king")
+        elif piece == "B" and row == 7:
+            self.board.grid[row][col] = "BK"
+            print(f"Promoting black piece at ({row}, {col}) to king")
+
     def animate_label(self):
         if self.game_label and self.game_label.winfo_exists():
             current_color = self.game_label.cget("fg")
@@ -58,7 +67,6 @@ class CheckersApp:
 
     def game_over(self, winner):
         self.game_label.config(text=f"Game Over! {winner} wins!")
-        # self.game_label.place(relx=0.5, rely=0.5, anchor="center")
 
     def check_game_over(self):
         white_pieces = sum(row.count("W") for row in self.board.grid)
@@ -152,6 +160,10 @@ class CheckersApp:
                     y = row * 75 + 37.5
                     if piece == "B":
                         self.draw_3d_piece(x, y, "black", "darkgray")
+                    elif piece == "BK":
+                        self.draw_3d_piece(x, y, "black", "gold")
+                    elif piece == "WK":
+                        self.draw_3d_piece(x, y, "white", "gold")
                     else:
                         self.draw_3d_piece(x, y, "white", "lightgray")
 
@@ -224,6 +236,7 @@ class CheckersApp:
                 self.player_turn = False
                 self.update_game_label()
                 print("Player's move completed, switching to computer's turn.")
+                self.promote_to_king(row, col)
                 self.draw_board()
                 self.draw_pieces()
 
@@ -231,7 +244,6 @@ class CheckersApp:
             elif (row, col) in self.possible_moves:
                 old_row, old_col = self.selected_piece
                 self.board.move_piece(old_row, old_col, row, col)
-
                 self.selected_piece = None
                 self.possible_moves = []
                 self.possible_captures = []
@@ -242,6 +254,7 @@ class CheckersApp:
                 self.player_turn = False
                 self.update_game_label()
                 print("Player's move completed, switching to computer's turn.")
+                self.promote_to_king(row, col)
                 self.draw_board()
                 self.draw_pieces()
 
@@ -270,23 +283,33 @@ class CheckersApp:
 
             if "-" in move:
                 from_pos, to_pos = map(int, move.split("-"))
-            elif "x" in move:
-                from_pos, to_pos = map(int, move.split("x"))
-
-            from_row, from_col = self.position_to_coords(from_pos)
-            to_row, to_col = self.position_to_coords(to_pos)
-
-            self.possible_captures = self.board.get_possible_captures(to_row, to_col)
-            print(f"Possible captures after computer's move: {self.possible_captures}")
-
-            if self.possible_captures:
-                self.master.after(2000, make_move)
-            else:
                 self.player_turn = True
                 self.update_game_label()
                 print("Computer's move completed, switching to player's turn.")
                 self.draw_board()
                 self.draw_pieces()
+
+            elif "x" in move:
+                from_pos, to_pos = map(int, move.split("x"))
+
+                from_row, from_col = self.position_to_coords(from_pos)
+                to_row, to_col = self.position_to_coords(to_pos)
+
+                self.possible_captures = self.board.get_possible_captures(
+                    to_row, to_col
+                )
+                print(
+                    f"Possible captures after computer's move: {self.possible_captures}"
+                )
+
+                if self.possible_captures:
+                    self.master.after(2000, make_move)
+                else:
+                    self.player_turn = True
+                    self.update_game_label()
+                    print("Computer's move completed, switching to player's turn.")
+                    self.draw_board()
+                    self.draw_pieces()
 
         make_move()
 
@@ -304,7 +327,6 @@ class CheckersApp:
 
     def process_single_move(self, move, piece_color):
         if "x" in move:
-
             positions = move.split("x")
             from_pos = int(positions[0])
 
@@ -350,16 +372,23 @@ class CheckersApp:
                     from_coords[0], from_coords[1], to_coords[0], to_coords[1]
                 )
                 from_pos = to_pos
-        else:
+
+        if "-" in move:
             from_pos, to_pos = map(int, move.split("-"))
             from_coords = self.position_to_coords(from_pos)
             to_coords = self.position_to_coords(to_pos)
+
             self.board.move_piece(
                 from_coords[0], from_coords[1], to_coords[0], to_coords[1]
             )
 
+        if piece_color == "B" and to_coords[0] == 7:
+            self.board.grid[to_coords[0]][to_coords[1]] = "BK"
+            print(f"Promoting black piece at {to_coords} to king")
+
         if piece_color == "B":
             self.last_computer_move = (from_pos, to_pos)
+            print("Last moved recorded for computer")
 
         self.draw_board()
         self.draw_pieces()
