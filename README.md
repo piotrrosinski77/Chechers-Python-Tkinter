@@ -13,6 +13,23 @@ TkCheckers is a classic checkers game built using Python and the Tkinter library
    git clone https://github.com/piotrrosinski77/Checkers-Python-Tkinter.git
    cd Checkers-Python-Tkinter
 
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+
+3. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+
+## Usage
+
+1. Run the application
+   ```bash
+   python warcaby/app.py
+
+2. The game window will open, and you can start playing checkers.
+
 <img src="img/ch1.png" width="300px"> <img src="img/ch2.png" width="300px"> <img src="img/ch3.png" width="300px">
 <img src="img/ch4.png" width="300px"><img src="img/ch5.png" width="300px"><img src="img/ch6.png" width="300px">
 
