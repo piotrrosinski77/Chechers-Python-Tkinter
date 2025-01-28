@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import PhotoImage
-from .board import Board
-from .data import data_loader
-from .ai import CheckersAIModel
+from board import Board
+from data import data_loader
+from ai import CheckersAIModel
 import math
 
 

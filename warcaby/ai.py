@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from .board import Board
+from board import Board
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Input
 
